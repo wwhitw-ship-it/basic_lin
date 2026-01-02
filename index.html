@@ -1,810 +1,1175 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專案啟動說明會 | Project Kickoff</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Project Kickoff Guide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Tailwind CDN（JIT，支援任意 className） -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- React / ReactDOM / Babel（支援 JSX 直接寫在 HTML） -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- 可選：自訂 scrollbar / 全局字型 等 -->
     <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+      body {
+        margin: 0;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(148, 163, 184, 0.7);
+        border-radius: 999px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <div id="root"></div>
 
+    <!-- React App 程式碼 -->
     <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        // Icon 組件包裝器
-        const Icon = ({ name, className = "w-6 h-6", ...props }) => {
-            const ref = React.useRef(null);
-            
-            useEffect(() => {
-                if (ref.current && window.lucide) {
-                    const iconElement = window.lucide.createElement(name);
-                    if (iconElement) {
-                        ref.current.innerHTML = iconElement.outerHTML;
-                    }
-                }
-            }, [name]);
-            
-            return <i ref={ref} className={className} {...props}></i>;
-        };
+      const {
+        useState
+      } = React;
 
-        const Section = ({ title, icon, children, className = "" }) => (
-            <div className={`bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 ${className}`}>
-                <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                        {icon}
-                    </div>
-                    <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
-                </div>
-                {children}
+      // 簡化版 icon component（用 SVG path 或用 emoji 代替 lucide-react）
+      const IconWrapper = ({ children }) => (
+        <span className="inline-flex items-center justify-center">
+          {children}
+        </span>
+      );
+
+      // 因為無法在瀏覽器直接 import 'lucide-react'，這裡用簡單替代圖示
+      const CalendarIcon = (props) => (
+        <IconWrapper {...props}>📅</IconWrapper>
+      );
+      const CheckCircle2 = (props) => (
+        <IconWrapper {...props}>✔️</IconWrapper>
+      );
+      const Clock = (props) => (
+        <IconWrapper {...props}>⏰</IconWrapper>
+      );
+      const TargetIcon = (props) => (
+        <IconWrapper {...props}>🎯</IconWrapper>
+      );
+      const AlertCircle = (props) => (
+        <IconWrapper {...props}>⚠️</IconWrapper>
+      );
+      const FileText = (props) => (
+        <IconWrapper {...props}>📄</IconWrapper>
+      );
+      const TrendingUp = (props) => (
+        <IconWrapper {...props}>📈</IconWrapper>
+      );
+      const Users = (props) => (
+        <IconWrapper {...props}>👥</IconWrapper>
+      );
+      const Layout = (props) => (
+        <IconWrapper {...props}>📊</IconWrapper>
+      );
+      const ArrowDown = (props) => (
+        <IconWrapper {...props}>⬇️</IconWrapper>
+      );
+      const List = (props) => (
+        <IconWrapper {...props}>📋</IconWrapper>
+      );
+      const Camera = (props) => (
+        <IconWrapper {...props}>📷</IconWrapper>
+      );
+      const Scissors = (props) => (
+        <IconWrapper {...props}>✂️</IconWrapper>
+      );
+      const Play = (props) => (
+        <IconWrapper {...props}>▶️</IconWrapper>
+      );
+      const MessageSquare = (props) => (
+        <IconWrapper {...props}>💬</IconWrapper>
+      );
+      const PenTool = (props) => (
+        <IconWrapper {...props}>✏️</IconWrapper>
+      );
+      const MonitorPlay = (props) => (
+        <IconWrapper {...props}>🖥️</IconWrapper>
+      );
+      const Tag = (props) => (
+        <IconWrapper {...props}>🏷️</IconWrapper>
+      );
+      const Clapperboard = (props) => (
+        <IconWrapper {...props}>🎬</IconWrapper>
+      );
+      const Timer = (props) => (
+        <IconWrapper {...props}>⏱️</IconWrapper>
+      );
+      const FileCheck = (props) => (
+        <IconWrapper {...props}>✅</IconWrapper>
+      );
+      const Lightbulb = (props) => (
+        <IconWrapper {...props}>💡</IconWrapper>
+      );
+      const Info = (props) => (
+        <IconWrapper {...props}>ℹ️</IconWrapper>
+      );
+      const SearchIcon = (props) => (
+        <IconWrapper {...props}>🔍</IconWrapper>
+      );
+      const Eye = (props) => (
+        <IconWrapper {...props}>👁️</IconWrapper>
+      );
+      const BarChart2 = (props) => (
+        <IconWrapper {...props}>📊</IconWrapper>
+      );
+      const VideoIcon = (props) => (
+        <IconWrapper {...props}>🎥</IconWrapper>
+      );
+      const InstagramIcon = (props) => (
+        <IconWrapper {...props}>📸</IconWrapper>
+      );
+      const ChevronDown = (props) => (
+        <IconWrapper {...props}>▼</IconWrapper>
+      );
+      const ChevronUp = (props) => (
+        <IconWrapper {...props}>▲</IconWrapper>
+      );
+
+      // 共用 Section 容器
+      const Section = ({ title, icon, children, className = "" }) => (
+        <div className={`bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 ${className}`}>
+          <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+            <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+              {icon}
             </div>
+            <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+          </div>
+          {children}
+        </div>
+      );
+
+      // 月曆元件
+      const CalendarWidget = ({
+        monthName,
+        year,
+        startDay,
+        daysInMonth,
+        availableDates,
+        selectedDates,
+        onDateSelect
+      }) => {
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const blanks = Array(startDay).fill(null);
+        const dates = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+        return (
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="font-bold text-slate-800 text-lg">
+                {monthName}
+                <span className="text-slate-400 text-sm ml-1">{year}</span>
+              </h4>
+            </div>
+
+            <div className="grid grid-cols-7 gap-2 text-center mb-2">
+              {days.map((d) => (
+                <div
+                  key={d}
+                  className="text-xs font-bold text-slate-400 uppercase tracking-wider"
+                >
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-2">
+              {blanks.map((_, i) => (
+                <div key={`blank-${i}`} />
+              ))}
+
+              {dates.map((date) => {
+                const dateStr = `${monthName}/${date}`;
+                const isAvailable = availableDates.includes(date);
+                const isSelected = selectedDates.includes(dateStr);
+
+                return (
+                  <button
+                    key={date}
+                    disabled={!isAvailable}
+                    onClick={() => isAvailable && onDateSelect(dateStr)}
+                    className={`
+                      aspect-square rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 relative
+                      ${
+                        !isAvailable
+                          ? "text-slate-300 cursor-default"
+                          : "hover:bg-indigo-50 cursor-pointer text-slate-700 font-bold"
+                      }
+                      ${
+                        isAvailable && !isSelected
+                          ? "border border-indigo-200 text-indigo-600"
+                          : ""
+                      }
+                      ${
+                        isSelected
+                          ? "bg-indigo-600 text-white shadow-md border-transparent transform scale-110 z-10"
+                          : ""
+                      }
+                    `}
+                  >
+                    {date}
+                    {isAvailable && !isSelected && (
+                      <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         );
+      };
 
-        const CalendarWidget = ({ monthName, year, startDay, daysInMonth, availableDates, selectedDates, onDateSelect }) => {
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const blanks = Array(startDay).fill(null);
-            const dates = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+      // 流程預覽元件 (簡化，保留互動)
+      const ProcessPreview = () => {
+        const [activeStep, setActiveStep] = useState(0);
 
-            return (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-bold text-slate-800 text-lg">{monthName} <span className="text-slate-400 text-sm ml-1">{year}</span></h4>
-                    </div>
-                    
-                    <div className="grid grid-cols-7 gap-2 text-center mb-2">
-                        {days.map(d => (
-                            <div key={d} className="text-xs font-bold text-slate-400 uppercase tracking-wider">{d}</div>
-                        ))}
-                    </div>
-                    
-                    <div className="grid grid-cols-7 gap-2">
-                        {blanks.map((_, i) => <div key={`blank-${i}`} />)}
-                        
-                        {dates.map(date => {
-                            let monthNum = 1;
-                            if(monthName === 'March') monthNum = 3;
-                            if(monthName === 'May') monthNum = 5;
-                            if(monthName === 'June') monthNum = 6;
-                            if(monthName === 'October') monthNum = 10;
-                            
-                            const dateStr = `${monthNum}/${date}`;
-                            const isAvailable = availableDates.includes(date);
-                            const isSelected = selectedDates.includes(dateStr);
-                            
-                            return (
-                                <button
-                                    key={date}
-                                    disabled={!isAvailable}
-                                    onClick={() => isAvailable && onDateSelect(dateStr)}
-                                    className={`
-                                        aspect-square rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 relative
-                                        ${!isAvailable ? 'text-slate-300 cursor-default' : 'hover:bg-indigo-50 cursor-pointer text-slate-700 font-bold'}
-                                        ${isAvailable && !isSelected ? 'border border-indigo-200 text-indigo-600' : ''}
-                                        ${isSelected ? 'bg-indigo-600 text-white shadow-md border-transparent transform scale-110 z-10' : ''}
-                                    `}
-                                >
-                                    {date}
-                                    {isAvailable && !isSelected && (
-                                        <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                                        </span>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
+        const steps = [
+          {
+            id: 0,
+            title: "1. 主題規劃",
+            icon: <List />,
+            desc: "從 15 個量身打造的主題中，挑選您最有感的 10 個。",
+            detail:
+              "以「美髮設計師」的角色出發，從客人常問的問題與專業眉角，規劃 15 支主題供選擇。",
+            previewContent: (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 h-full flex flex-col">
+                <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                  <div className="flex items-center gap-2">
+                    <List className="w-4 h-4 text-indigo-600" />
+                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                      主題選單示意
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-white bg-indigo-600 px-2 py-0.5 rounded-full">
+                    請勾選 10 支
+                  </span>
                 </div>
-            );
+
+                <div className="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-indigo-600 border-indigo-600">
+                        <CheckCircle2 className="w-3 h-3 text-white" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded mb-1 inline-block">
+                          常見問題
+                        </span>
+                        <p className="text-sm font-bold text-slate-800">
+                          破解洗髮迷思：為什麼頭髮越洗越乾？
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          針對客人常反映的乾澀問題，點出水溫過高的錯誤習慣。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 w-4 h-4 rounded border border-slate-300"></div>
+                      <div>
+                        <span className="text-xs font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded mb-1 inline-block">
+                          專業眉角
+                        </span>
+                        <p className="text-sm font-bold text-slate-800">
+                          染髮後三天不能洗頭？其實...
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          解釋染劑原理，建立專業信任感。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 opacity-60">
+                    <p className="text-center text-xs text-slate-400 py-2">
+                      ... 還有更多主題供您選擇
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )
+          },
+          {
+            id: 1,
+            title: "2. 腳本企劃",
+            icon: <FileText />,
+            desc: "根據選定主題，產出結構型腳本。",
+            detail:
+              "用「起承轉合」架構設計內容邏輯，防止拍攝時內容發散。",
+            previewContent: (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 h-full flex flex-col">
+                <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-indigo-600" />
+                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                      腳本結構示意
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-white bg-indigo-600 px-2 py-0.5 rounded-full">
+                    結構型大綱
+                  </span>
+                </div>
+
+                <div className="space-y-4 flex-grow overflow-y-auto pr-1 custom-scrollbar">
+                  <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+                    <div className="mb-2">
+                      <span className="text-[10px] font-bold text-indigo-700 bg-indigo-200/50 px-2 py-0.5 rounded mr-2">
+                        主題
+                      </span>
+                      <span className="text-sm font-bold text-slate-800">
+                        破解洗髮迷思：為什麼頭髮越洗越乾？
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-indigo-700 bg-indigo-200/50 px-2 py-0.5 rounded mr-2 align-top">
+                        簡述
+                      </span>
+                      <span className="text-xs text-slate-600 inline-block align-top w-[calc(100%-3rem)]">
+                        針對客人常反映的髮質乾澀問題，點出常見錯誤洗髮習慣，並提供專業解決方案。
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 起承轉合 簡化版本 */}
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-sm font-bold shadow-sm">
+                          起
+                        </div>
+                      </div>
+                      <div className="flex-grow pb-2">
+                        <p className="text-xs font-bold text-slate-800 mb-1">
+                          為什麼要聽？(開頭鉤子)
+                        </p>
+                        <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-rose-400">
+                          「你也覺得頭髮越洗越乾嗎？其實可能是你洗頭的方式錯了！」
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold shadow-sm">
+                          承
+                        </div>
+                      </div>
+                      <div className="flex-grow pb-2">
+                        <p className="text-xs font-bold text-slate-800 mb-1">
+                          這件事怎麼發生的？(情境)
+                        </p>
+                        <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-amber-400">
+                          「很多人習慣水溫開很燙，以為這樣才洗得乾淨，但其實高溫正在破壞你的毛鱗片...」
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold shadow-sm">
+                          轉
+                        </div>
+                      </div>
+                      <div className="flex-grow pb-2">
+                        <p className="text-xs font-bold text-slate-800 mb-1">
+                          觀點理解或轉折 (價值點)
+                        </p>
+                        <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-emerald-400">
+                          「試試看『溫水洗頭皮，涼水沖髮尾』。溫水能帶走油垢，涼水能幫助毛鱗片閉合...」
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold shadow-sm">
+                          合
+                        </div>
+                      </div>
+                      <div className="flex-grow">
+                        <p className="text-xs font-bold text-slate-800 mb-1">
+                          行動呼籲 (CTA)
+                        </p>
+                        <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-indigo-400">
+                          「今晚就試試看，有感覺差別的在底下留言告訴我！我是 XX 設計師，關注我變更美。」
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          },
+          {
+            id: 2,
+            title: "3. 拍攝執行",
+            icon: <Camera />,
+            desc: "專業引導拍攝，自然生活場景。",
+            detail:
+              "以你原本的工作或生活現場為背景，現場引導語氣與動作，降低鏡頭恐懼。",
+            previewContent: (
+              <div className="bg-slate-900 rounded-lg shadow-sm overflow-hidden h-full relative group">
+                <div className="absolute inset-0 bg-slate-700 opacity-60"></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
+                  <Camera className="w-12 h-12 mb-4 text-indigo-400" />
+                  <h4 className="text-xl font-bold mb-2">專業現場引導</h4>
+                  <p className="text-sm text-slate-200">
+                    最熟悉的環境 / 專業收音 / 對話引導
+                  </p>
+                  <div className="mt-6 bg-black/50 px-4 py-2 rounded-full text-xs font-mono border border-white/20">
+                    REC ● 00:15:32
+                  </div>
+                </div>
+              </div>
+            )
+          },
+          {
+            id: 3,
+            title: "4. 後製交付",
+            icon: <Scissors />,
+            desc: "剪輯、字幕與特效包裝，確認成品。",
+            detail:
+              "處理剪輯、字幕、音效與背景音樂，交付可直接上架 Reels / TikTok 的影片。",
+            previewContent: (
+              <div className="bg-slate-900 rounded-xl shadow-2xl border-4 border-slate-800 h-full relative overflow-hidden flex items-center justify-center">
+                <div className="relative z-0 w-full h-full bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center">
+                  <div className="text-center text-white p-6">
+                    <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">
+                      洗頭必看！<br />
+                      3 招告別稻草髮
+                    </h3>
+                    <span className="bg-rose-500 text-white px-3 py-1 text-xs font-bold rounded-full">
+                      #髮型師日常
+                    </span>
+                  </div>
+                  <div className="absolute bottom-16 left-6 right-6">
+                    <div className="bg-black/40 backdrop-blur-md rounded-lg p-3 border-l-4 border-yellow-400">
+                      <p className="text-white text-sm font-bold">
+                        ✨ 重點筆記：水溫不要超過 40 度！
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/20 group cursor-pointer hover:bg-black/10 transition-colors">
+                  <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Play className="w-6 h-6 text-indigo-600" />
+                  </div>
+                </div>
+
+                <div className="absolute right-4 bottom-24 flex flex-col gap-4 text-white items-center">
+                  <div className="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center">
+                    ❤️
+                  </div>
+                  <div className="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center">
+                    💬
+                  </div>
+                  <div className="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center">
+                    ✈️
+                  </div>
+                </div>
+              </div>
+            )
+          }
+        ];
+
+        return (
+          <div className="grid md:grid-cols-2 gap-6 h-[500px]">
+            <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+              {steps.map((step, index) => (
+                <div
+                  key={index}
+                  onClick={() => setActiveStep(index)}
+                  className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
+                    activeStep === index
+                      ? "border-indigo-600 bg-indigo-50 shadow-md"
+                      : "border-slate-200 bg-white hover:border-indigo-300"
+                  }`}
+                >
+                  {activeStep === index && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600"></div>
+                  )}
+                  <div className="flex items-start">
+                    <div
+                      className={`p-3 rounded-xl mr-4 transition-colors ${
+                        activeStep === index
+                          ? "bg-indigo-600 text-white"
+                          : "bg-slate-100 text-slate-500 group-hover:text-indigo-600"
+                      }`}
+                    >
+                      {step.icon}
+                    </div>
+                    <div>
+                      <h3
+                        className={`text-base font-bold mb-1 ${
+                          activeStep === index
+                            ? "text-indigo-900"
+                            : "text-slate-900"
+                        }`}
+                      >
+                        {step.title}
+                      </h3>
+                      <p
+                        className={`text-sm mb-2 ${
+                          activeStep === index
+                            ? "text-indigo-700"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {step.desc}
+                      </p>
+
+                      <div
+                        className={`text-xs leading-relaxed text-slate-600 transition-all duration-300 ${
+                          activeStep === index
+                            ? "opacity-100 max-h-20"
+                            : "opacity-0 max-h-0"
+                        }`}
+                      >
+                        {step.detail}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-slate-50 rounded-3xl p-4 border border-slate-200 shadow-inner relative h-full flex flex-col overflow-hidden">
+              <div className="absolute top-4 right-6 text-[10px] font-bold text-slate-300 uppercase tracking-widest z-20">
+                Preview Mode
+              </div>
+              <div className="flex-grow relative mt-2 w-full h-full">
+                {steps.map((step, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-all duration-500 transform ${
+                      activeStep === index
+                        ? "opacity-100 translate-y-0 z-10"
+                        : "opacity-0 translate-y-8 z-0 pointer-events-none"
+                    }`}
+                  >
+                    {step.previewContent}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // 設計師資料（從原始程式精簡保留）
+      const designers = [
+        {
+          name: "榆柔老師",
+          shop: "小林髮廊 風華店",
+          avatar: "柔",
+          bg: "bg-rose-100",
+          text: "text-rose-600",
+          instagram: "https://www.instagram.com/hair_nxroun/",
+          skills: ["染髮色彩專家", "漂染技術", "造型設計", "髮質修護"],
+          traits: ["韓系/日系柔和感", "細膩溝通", "低調專注"],
+          themes: [
+            {
+              cat: "痛點解決",
+              title: "三種米色系染髮比較",
+              reason:
+                "解決客戶選色困擾（奶茶/米白金/米棕），展現專業諮詢能力。"
+            },
+            {
+              cat: "人格魅力",
+              title: "染髮後前三天這樣做，顏色多撐一個月",
+              reason: "提供實用價值，增加客戶黏著度，展現專業關懷。"
+            },
+            {
+              cat: "趨勢跟風",
+              title: "2026韓系髮色Top3",
+              reason: "緊跟趨勢關鍵字,吸引搜尋流量。"
+            }
+          ]
+        },
+        {
+          name: "姿姿老師",
+          shop: "小林髮廊 重慶店",
+          avatar: "姿",
+          bg: "bg-amber-100",
+          text: "text-amber-600",
+          instagram: "https://www.instagram.com/hair_sammi522/",
+          skills: ["進階染髮技術", "特殊色彩設計", "染燙結合"],
+          traits: ["敢於嘗試、追求獨特", "高度技術熱情", "低調實力派"],
+          themes: [
+            {
+              cat: "痛點解決",
+              title: "手刷染 vs. 挑染 vs. 光線染：差異一次看",
+              reason: "解決客人最常問的問題。"
+            },
+            {
+              cat: "痛點解決",
+              title: "不漂也能做的低調挑染",
+              reason: "降低特殊染的技術門檻印象。"
+            }
+          ]
+        },
+        {
+          name: "芝芝老師",
+          shop: "小林髮廊 崑陽店",
+          avatar: "芝",
+          bg: "bg-emerald-100",
+          text: "text-emerald-600",
+          instagram: "https://www.instagram.com/hair_chichi_10/",
+          skills: ["縮毛矯正", "燙＋染結構", "特殊色", "5G鍍膜護髮"],
+          traits: ["解決抗躁感", "處理複雜需求", "高端專業人設"],
+          themes: [
+            {
+              cat: "痛點解決",
+              title: "三種自然捲程度的矯正方案",
+              reason: "展現專業診斷能力。"
+            },
+            {
+              cat: "教育科普",
+              title: "5G 鍍膜護髮是什麼？",
+              reason: "建立技術與產品門檻認知。"
+            }
+          ]
+        }
+      ];
+
+      // 社群品牌觀察區塊
+      const SocialObservationSection = () => {
+        const [expandedId, setExpandedId] = useState(null);
+
+        const toggleExpand = (id) => {
+          setExpandedId(expandedId === id ? null : id);
         };
 
-        const ProcessPreview = () => {
-            const [activeStep, setActiveStep] = useState(0);
+        return (
+          <Section
+            title="社群品牌觀察 & 主題規劃範例"
+            icon={<SearchIcon className="w-6 h-6" />}
+          >
+            <p className="text-slate-600 mb-6">
+              我們針對每位設計師的特質、商圈與客群，量身打造了以下主題規劃：
+            </p>
 
-            const steps = [
-                {
-                    id: 0,
-                    title: "1. 主題規劃",
-                    icon: <Icon name="List" />,
-                    desc: "從 15 個量身打造的主題中,挑選您最有感的 10 個。",
-                    detail: "我們會以「美髮設計師」的角色出發,從客人常問的問題、工作中的反覆狀況、專業眉角、以及服務流程中易被誤會的地方,規劃出 15 支主題供您選擇。",
-                    previewContent: (
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 h-full flex flex-col">
-                            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
-                                <div className="flex items-center gap-2">
-                                    <Icon name="List" className="w-4 h-4 text-indigo-600" />
-                                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">主題選單示意</span>
-                                </div>
-                                <span className="text-[10px] font-bold text-white bg-indigo-600 px-2 py-0.5 rounded-full">請勾選 10 支</span>
-                            </div>
-                            
-                            <div className="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
-                                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-indigo-300 cursor-pointer transition-colors">
-                                    <div className="flex items-start gap-3">
-                                        <div className="mt-0.5 w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-indigo-600 border-indigo-600">
-                                            <Icon name="CheckCircle2" className="w-3 h-3 text-white" />
-                                        </div>
-                                        <div>
-                                            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded mb-1 inline-block">常見問題</span>
-                                            <p className="text-sm font-bold text-slate-800">破解洗髮迷思：為什麼頭髮越洗越乾？</p>
-                                            <p className="text-xs text-slate-500 mt-1">針對客人常反映的乾澀問題,點出水溫過高的錯誤習慣。</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-indigo-300 cursor-pointer transition-colors">
-                                    <div className="flex items-start gap-3">
-                                        <div className="mt-0.5 w-4 h-4 rounded border border-slate-300"></div>
-                                        <div>
-                                            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded mb-1 inline-block">專業眉角</span>
-                                            <p className="text-sm font-bold text-slate-800">染髮後三天不能洗頭？其實...</p>
-                                            <p className="text-xs text-slate-500 mt-1">解釋染劑原理,建立專業信任感。</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-indigo-300 cursor-pointer transition-colors">
-                                    <div className="flex items-start gap-3">
-                                        <div className="mt-0.5 w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-indigo-600 border-indigo-600">
-                                            <Icon name="CheckCircle2" className="w-3 h-3 text-white" />
-                                        </div>
-                                        <div>
-                                            <span className="text-xs font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded mb-1 inline-block">服務誤區</span>
-                                            <p className="text-sm font-bold text-slate-800">為什麼剪瀏海要收錢？</p>
-                                            <p className="text-xs text-slate-500 mt-1">溝通技術價值,化解價格異議。</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-indigo-300 cursor-pointer transition-colors opacity-60">
-                                    <p className="text-center text-xs text-slate-400 py-2">... 還有更多主題供您選擇</p>
-                                </div>
-                            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {designers.map((designer, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl border border-slate-200 hover:border-indigo-300 transition-all shadow-sm flex flex-col h-full"
+                >
+                  <div className="p-5 pb-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${designer.bg} ${designer.text}`}
+                        >
+                          {designer.avatar}
                         </div>
-                    )
-                },
-                {
-                    id: 1,
-                    title: "2. 腳本企劃",
-                    icon: <Icon name="FileText" />,
-                    desc: "根據選定主題,產出結構型腳本。",
-                    detail: "這不是逐字稿,而是運用「起承轉合」架構,幫您設計好內容邏輯。防止拍攝時內容發散,讓您知道該講什麼,但又能保有自然發揮的空間。",
-                    previewContent: (
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 h-full flex flex-col">
-                            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
-                                <div className="flex items-center gap-2">
-                                    <Icon name="FileText" className="w-4 h-4 text-indigo-600" />
-                                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">腳本結構示意</span>
-                                </div>
-                                <span className="text-[10px] font-bold text-white bg-indigo-600 px-2 py-0.5 rounded-full">結構型大綱</span>
-                            </div>
-                            
-                            <div className="space-y-4 flex-grow overflow-y-auto pr-1 custom-scrollbar">
-                                <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                                    <div className="mb-2">
-                                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-200/50 px-2 py-0.5 rounded mr-2">主題</span>
-                                        <span className="text-sm font-bold text-slate-800">破解洗髮迷思：為什麼頭髮越洗越乾？</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-200/50 px-2 py-0.5 rounded mr-2 align-top">簡述</span>
-                                        <span className="text-xs text-slate-600 inline-block align-top w-[calc(100%-3rem)]">針對客人常反映的髮質乾澀問題,點出常見的錯誤洗髮習慣(水溫過高),並提供專業的解決方案,建立專家形象。</span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <div className="flex gap-3">
-                                        <div className="flex-shrink-0 w-8 flex flex-col items-center">
-                                            <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-sm font-bold shadow-sm">起</div>
-                                            <div className="h-full w-0.5 bg-slate-100 my-1"></div>
-                                        </div>
-                                        <div className="flex-grow pb-2">
-                                            <p className="text-xs font-bold text-slate-800 mb-1">為什麼要聽？(開頭鉤子)</p>
-                                            <p className="text-xs text-slate-500 mb-1">提供開場切入方向,協助你快速進入狀態。</p>
-                                            <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-rose-400">
-                                                「你也覺得頭髮越洗越乾嗎？其實可能是你洗頭的方式錯了！」
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-3">
-                                        <div className="flex-shrink-0 w-8 flex flex-col items-center">
-                                            <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold shadow-sm">承</div>
-                                            <div className="h-full w-0.5 bg-slate-100 my-1"></div>
-                                        </div>
-                                        <div className="flex-grow pb-2">
-                                            <p className="text-xs font-bold text-slate-800 mb-1">這件事怎麼發生的？(情境)</p>
-                                            <p className="text-xs text-slate-500 mb-1">提供事件的敘述順序,避免不知道從哪開始講。</p>
-                                            <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-amber-400">
-                                                「很多人習慣水溫開很燙,以為這樣才洗得乾淨,但其實高溫正在破壞你的毛鱗片...」
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-3">
-                                        <div className="flex-shrink-0 w-8 flex flex-col items-center">
-                                            <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold shadow-sm">轉</div>
-                                            <div className="h-full w-0.5 bg-slate-100 my-1"></div>
-                                        </div>
-                                        <div className="flex-grow pb-2">
-                                            <p className="text-xs font-bold text-slate-800 mb-1">觀點理解或轉折 (價值點)</p>
-                                            <p className="text-xs text-slate-500 mb-1">提供可分享的理解角度,幫助內容有重點但不說教。</p>
-                                            <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-emerald-400">
-                                                「試試看『溫水洗頭皮,涼水沖髮尾』。溫水能帶走油垢,涼水能幫助毛鱗片閉合...」
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-3">
-                                        <div className="flex-shrink-0 w-8 flex flex-col items-center">
-                                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold shadow-sm">合</div>
-                                        </div>
-                                        <div className="flex-grow">
-                                            <p className="text-xs font-bold text-slate-800 mb-1">行動呼籲 (CTA)</p>
-                                            <p className="text-xs text-slate-500 mb-1">停在一個可被消化的點,幫助你知道怎麼收尾。</p>
-                                            <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 border-l-2 border-indigo-400">
-                                                「今晚就試試看,有感覺差別的在底下留言告訴我！我是XX設計師,關注我變更美。」
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800">
+                            {designer.name}
+                          </h4>
+                          <p className="text-xs text-slate-500">
+                            {designer.shop}
+                          </p>
                         </div>
-                    )
-                },
-                {
-                    id: 2,
-                    title: "3. 拍攝執行",
-                    icon: <Icon name="Camera" />,
-                    desc: "專業引導拍攝,自然生活場景。",
-                    detail: "我們會以你原本的工作或生活現場,日常都在使用的工具或環境,作為影片拍攝的素材道具,並在現場引導您的語氣與動作。您只需要專注在展現專業,不需要擔心鏡頭恐懼。",
-                    previewContent: (
-                        <div className="bg-slate-900 rounded-lg shadow-sm overflow-hidden h-full relative group">
-                            <img 
-                                src="https://images.unsplash.com/photo-1579632652768-6cb9dcf85912?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                                alt="拍攝現場示意" 
-                                className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500"
-                            />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
-                                <Icon name="Camera" className="w-12 h-12 mb-4 text-indigo-400" />
-                                <h4 className="text-xl font-bold mb-2">專業現場引導</h4>
-                                <p className="text-sm text-slate-200">最熟悉的環境 / 專業麥克風收音 / 對話引導</p>
-                                <div className="mt-6 bg-black/50 px-4 py-2 rounded-full text-xs font-mono border border-white/20">
-                                    REC ● 00:15:32
-                                </div>
-                            </div>
-                        </div>
-                    )
-                },
-                {
-                    id: 3,
-                    title: "4. 後製交付",
-                    icon: <Icon name="Scissors" />,
-                    desc: "剪輯、字幕與特效包裝,確認成品。",
-                    detail: "我们会處理所有繁瑣的後製工作：修剪贅字、上字幕、添加音效與背景音樂,最後交付給您一支可以直接上傳 IG/Reels/TikTok 的高畫質影片。",
-                    previewContent: (
-                        <div className="bg-slate-900 rounded-xl shadow-2xl border-4 border-slate-800 h-full relative overflow-hidden flex items-center justify-center">
-                            <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-                                <div className="w-8 h-1 bg-white/30 rounded-full"></div>
-                                <div className="w-8 h-1 bg-white/30 rounded-full"></div>
-                                <div className="w-8 h-1 bg-white/30 rounded-full"></div>
-                            </div>
-                            
-                            <div className="relative z-0 w-full h-full bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center">
-                                <img 
-                                    src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2669&auto=format&fit=crop" 
-                                    alt="影片封面"
-                                    className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50"
-                                />
-                                <div className="text-center text-white p-6">
-                                    <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">洗頭必看！<br/>3招告別稻草髮</h3>
-                                    <span className="bg-rose-500 text-white px-3 py-1 text-xs font-bold rounded-full">#髮型師日常</span>
-                                </div>
-                                <div className="absolute bottom-16 left-6 right-6">
-                                    <div className="bg-black/40 backdrop-blur-md rounded-lg p-3 border-l-4 border-yellow-400">
-                                        <p className="text-white text-sm font-bold">✨ 重點筆記：水溫不要超過40度！</p>
-                                    </div>
-                                </div>
-                            </div>
+                      </div>
+                      <a
+                        href={designer.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-slate-400 hover:text-rose-500 transition-colors"
+                      >
+                        <InstagramIcon className="w-5 h-5" />
+                      </a>
+                    </div>
 
-                            <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/20 group cursor-pointer hover:bg-black/10 transition-colors">
-                                <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                    <Icon name="Play" className="w-6 h-6 text-indigo-600" />
-                                </div>
-                            </div>
-
-                            <div className="absolute right-4 bottom-24 flex flex-col gap-4 text-white items-center">
-                                <div className="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center">❤️</div>
-                                <div className="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center">💬</div>
-                                <div className="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center">✈️</div>
-                            </div>
-                        </div>
-                    )
-                }
-            ];
-
-            return (
-                <div className="grid md:grid-cols-2 gap-6 h-[500px]">
-                    <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                        {steps.map((step, index) => (
-                            <div 
-                                key={index}
-                                onClick={() => setActiveStep(index)}
-                                className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${
-                                    activeStep === index 
-                                        ? 'border-indigo-600 bg-indigo-50 shadow-md' 
-                                        : 'border-slate-200 bg-white hover:border-indigo-300'
-                                }`}
+                    <div className="space-y-3 mb-4">
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">
+                          技術專長
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {designer.skills.map((skill, i) => (
+                            <span
+                              key={i}
+                              className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
                             >
-                                {activeStep === index && (
-                                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600"></div>
-                                )}
-                                <div className="flex items-start">
-                                    <div className={`p-3 rounded-xl mr-4 transition-colors ${
-                                        activeStep === index ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:text-indigo-600'
-                                    }`}>
-                                        {step.icon}
-                                    </div>
-                                    <div>
-                                        <h3 className={`text-base font-bold mb-1 ${activeStep === index ? 'text-indigo-900' : 'text-slate-900'}`}>
-                                            {step.title}
-                                        </h3>
-                                        <p className={`text-sm mb-2 ${activeStep === index ? 'text-indigo-700' : 'text-slate-500'}`}>
-                                            {step.desc}
-                                        </p>
-                                        
-                                        <div className={`text-xs leading-relaxed text-slate-600 transition-all duration-300 ${
-                                            activeStep === index ? 'opacity-100 max-h-20' : 'opacity-0 max-h-0'
-                                        }`}>
-                                            {step.detail}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">
+                          特質專長
+                        </p>
+                        <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
+                          {designer.traits.map((trait, i) => (
+                            <li key={i}>{trait}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-auto border-t border-slate-100 bg-slate-50 rounded-b-xl flex-grow flex flex-col">
+                    <div
+                      className="p-3 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors"
+                      onClick={() => toggleExpand(idx)}
+                    >
+                      <div className="flex items-center gap-2 text-indigo-600">
+                        <VideoIcon className="w-4 h-4" />
+                        <span className="text-xs font-bold">
+                          規劃主題範例 ({designer.themes.length}支)
+                        </span>
+                      </div>
+                      {expandedId === idx ? (
+                        <ChevronUp className="w-4 h-4 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                      )}
                     </div>
 
-                    <div className="bg-slate-50 rounded-3xl p-4 border border-slate-200 shadow-inner relative h-full flex flex-col overflow-hidden">
-                        <div className="absolute top-4 right-6 text-[10px] font-bold text-slate-300 uppercase tracking-widest z-20">Preview Mode</div>
-                        <div className="flex-grow relative mt-2 w-full h-full">
-                            {steps.map((step, index) => (
-                                <div 
-                                    key={index}
-                                    className={`absolute inset-0 transition-all duration-500 transform ${
-                                        activeStep === index 
-                                            ? 'opacity-100 translate-y-0 z-10' 
-                                            : 'opacity-0 translate-y-8 z-0 pointer-events-none'
-                                    }`}
-                                >
-                                    {step.previewContent}
-                                </div>
-                            ))}
+                    {expandedId === idx && (
+                      <div className="px-3 pb-3 max-h-64 overflow-y-auto custom-scrollbar">
+                        <div className="space-y-3 pt-2">
+                          {designer.themes.map((theme, i) => (
+                            <div
+                              key={i}
+                              className="bg-white p-2 rounded border border-slate-200 shadow-sm"
+                            >
+                              <div className="flex items-start justify-between mb-1">
+                                <span className="text-[10px] font-bold text-white bg-indigo-500 px-1.5 rounded-sm">
+                                  {theme.cat}
+                                </span>
+                                <span className="text-[10px] text-slate-300">
+                                  #{i + 1}
+                                </span>
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 mb-1 leading-snug">
+                                {theme.title}
+                              </p>
+                              <p className="text-[10px] text-slate-500 leading-tight">
+                                {theme.reason}
+                              </p>
+                            </div>
+                          ))}
                         </div>
-                    </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-            );
+              ))}
+            </div>
+          </Section>
+        );
+      };
+
+      // 主 App
+      const ClientGuideApp = () => {
+        const [selectedDates, setSelectedDates] = useState([]);
+
+        const toggleDate = (dateId) => {
+          if (selectedDates.includes(dateId)) {
+            setSelectedDates(selectedDates.filter((id) => id !== dateId));
+          } else {
+            setSelectedDates([...selectedDates, dateId]);
+          }
         };
 
-        const ClientGuideApp = () => {
-            const [selectedDates, setSelectedDates] = useState([]);
+        const features = [
+          "本批影片主題方向設定",
+          "每支腳本大綱 (含起/承/轉/合)",
+          "拍攝執行與後製剪輯",
+          "10 支完整可上架影片"
+        ];
 
-            const toggleDate = (dateId) => {
-                if (selectedDates.includes(dateId)) {
-                    setSelectedDates(selectedDates.filter(id => id !== dateId));
-                } else {
-                    setSelectedDates([...selectedDates, dateId]);
-                }
-            };
+        return (
+          <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-indigo-100 selection:text-indigo-800 pb-20">
+            <header className="bg-indigo-900 text-white pt-20 pb-32 px-6 rounded-b-[3rem] shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
 
-            const features = [
-                "本批影片主題方向設定",
-                "每支腳本大綱 (含起/承/轉/合)",
-                "拍攝執行與後製剪輯",
-                "10 支完整可上架影片"
-            ];
+              <div className="max-w-4xl mx-auto text-center relative z-10">
+                <div className="inline-block bg-indigo-800/50 border border-indigo-400/30 px-4 py-1.5 rounded-full text-indigo-200 text-sm font-bold mb-6">
+                  Project Kickoff
+                </div>
+                <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+                  專案啟動說明會
+                </h1>
+                <p className="text-xl text-indigo-100 font-medium">
+                  今天，我們將確認合作的每一步，並定調未來的品牌方向。
+                </p>
+              </div>
+            </header>
 
-            return (
-                <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-indigo-100 selection:text-indigo-800 pb-20">
-                    
-                    <header className="bg-indigo-900 text-white pt-20 pb-32 px-6 rounded-b-[3rem] shadow-xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
-                        
-                        <div className="max-w-4xl mx-auto text-center relative z-10">
-                            <div className="inline-block bg-indigo-800/50 border border-indigo-400/30 px-4 py-1.5 rounded-full text-indigo-200 text-sm font-bold mb-6">
-                                Project Kickoff
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-                                專案啟動說明會
-                            </h1>
-                            <p className="text-xl text-indigo-100 font-medium">
-                                今天,我們將確認合作的每一步,並定調未來的品牌方向。
+            <main className="max-w-4xl mx-auto px-4 -mt-20 relative z-20">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex flex-col md:flex-row justify-around items-center gap-4 mb-12">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                    1
+                  </div>
+                  <span className="font-bold text-slate-700">
+                    基本流程與拍攝
+                  </span>
+                </div>
+                <ArrowDown className="w-5 h-5 text-slate-300 md:transform md:-rotate-90" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                    2
+                  </div>
+                  <span className="font-bold text-slate-700">
+                    主題內容與方向
+                  </span>
+                </div>
+              </div>
+
+              {/* Part 1 */}
+              <div className="mb-16">
+                <h3 className="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 pl-2 border-l-4 border-indigo-500">
+                  Part 01. 基本流程與拍攝
+                </h3>
+
+                <Section
+                  title="方案與權益確認"
+                  icon={<FileText className="w-6 h-6" />}
+                >
+                  <div className="flex items-start bg-rose-50 p-4 rounded-xl border border-rose-100">
+                    <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 mr-3 flex-shrink-0" />
+                    <div>
+                      <p className="text-rose-900 font-bold text-sm">權益提醒</p>
+                      <p className="text-rose-700 text-sm mt-1">
+                        目前的優惠價格需在{" "}
+                        <strong className="underline decoration-2">12/31 前確認</strong>{" "}
+                        才有效。
+                      </p>
+                    </div>
+                  </div>
+                </Section>
+
+                {/* Offer 區塊 */}
+                <section className="py-12 bg-slate-900 relative overflow-hidden rounded-3xl mb-8">
+                  <div className="absolute inset-0 opacity-10 bg-slate-800"></div>
+                  <div className="px-4 relative z-10 flex flex-col md:flex-row items-center gap-12">
+                    <div className="md:w-1/2 text-white">
+                      <div className="inline-block bg-indigo-500/20 border border-indigo-400/30 rounded-full px-4 py-1.5 mb-6">
+                        <span className="text-indigo-300 text-sm font-bold tracking-wide uppercase">
+                          Limited Offer
+                        </span>
+                      </div>
+                      <h2 className="text-3xl md:text-4xl font-extrabold mb-6 leading-tight">
+                        首購體驗方案
+                        <br />
+                        <span className="text-indigo-400">
+                          建構你的專業第一步
+                        </span>
+                      </h2>
+                      <p className="text-slate-300 text-base mb-8 leading-relaxed">
+                        專為初次合作夥伴設計的低門檻方案，一次性投入，就能獲得完整服務體驗與 10 支高品質影片。
+                      </p>
+                      <ul className="space-y-4 mb-10">
+                        <li className="flex items-center text-slate-200">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400 mr-3" />
+                          <span>無綁約，新客限一次</span>
+                        </li>
+                        <li className="flex items-center text-slate-200">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400 mr-3" />
+                          <span>有人帶領的輕鬆起步</span>
+                        </li>
+                        <li className="flex items-center text-slate-200">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400 mr-3" />
+                          <span>建立觀眾信任的基礎</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="md:w-1/2 w-full">
+                      <div className="bg-white rounded-3xl p-6 shadow-2xl border-4 border-indigo-500/30 transform hover:-translate-y-2 transition-transform duration-300 relative">
+                        <div className="absolute -top-5 -right-5 bg-rose-500 text-white w-20 h-20 rounded-full flex flex-col items-center justify-center font-bold shadow-lg transform rotate-12">
+                          <span className="text-xs">現省</span>
+                          <span className="text-lg">$17K</span>
+                        </div>
+
+                        <div className="flex justify-between items-start mb-6">
+                          <div>
+                            <h3 className="text-xl font-bold text-slate-900">
+                              首購體驗方案
+                            </h3>
+                            <p className="text-slate-500 text-sm mt-1">
+                              無綁約・體驗完整流程
                             </p>
+                          </div>
+                          <div className="p-3 bg-indigo-50 rounded-xl">
+                            <Play className="w-6 h-6 text-indigo-600" />
+                          </div>
                         </div>
-                    </header>
 
-                    <main className="max-w-4xl mx-auto px-4 -mt-20 relative z-20">
-                        
-                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex flex-col md:flex-row justify-around items-center gap-4 mb-12">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">1</div>
-                                <span className="font-bold text-slate-700">基本流程與拍攝</span>
+                        <div className="mb-8 pb-8 border-b border-slate-100">
+                          <div className="flex items-baseline gap-3">
+                            <span className="text-4xl font-extrabold text-slate-900">
+                              $13,000
+                            </span>
+                            <span className="text-base text-slate-400 line-through decoration-2">
+                              價值 $30,000
+                            </span>
+                          </div>
+                          <p className="text-indigo-600 font-medium text-sm mt-2 flex items-center">
+                            <Tag className="w-4 h-4 mr-1" /> 新客限定優惠價
+                          </p>
+                        </div>
+
+                        <div className="space-y-6 mb-8">
+                          <div>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                              你會實際獲得什麼
+                            </p>
+                            <ul className="space-y-3">
+                              {features.map((item, idx) => (
+                                <li
+                                  key={idx}
+                                  className="flex items-start text-sm text-slate-700"
+                                >
+                                  <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0 mr-3" />
+                                  <span className="font-medium">{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="bg-slate-50 rounded-xl p-4 space-y-2 text-xs text-slate-600">
+                            <div className="flex items-center">
+                              <Clapperboard className="w-4 h-4 text-indigo-500 mr-2" />
+                              <span>
+                                預計產出：
+                                <strong className="text-slate-900">
+                                  10 支影片
+                                </strong>
+                              </span>
                             </div>
-                            <Icon name="ArrowDown" className="w-5 h-5 text-slate-300 md:transform md:-rotate-90" />
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">2</div>
-                                <span className="font-bold text-slate-700">主題內容與方向</span>
+                            <div className="flex items-center">
+                              <Timer className="w-4 h-4 text-indigo-500 mr-2" />
+                              <span>
+                                拍攝執行：
+                                <strong className="text-slate-900">
+                                  1 天 (至少 5 小時)
+                                </strong>
+                              </span>
                             </div>
+                            <div className="flex items-center">
+                              <FileCheck className="w-4 h-4 text-indigo-500 mr-2" />
+                              <span>
+                                後製交付：
+                                <strong className="text-slate-900">
+                                  以雙方協議時間為主
+                                </strong>
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-start">
+                            <Lightbulb className="w-5 h-5 text-amber-500 mt-0.5 mr-3 flex-shrink-0" />
+                            <div>
+                              <p className="text-amber-900 font-bold text-sm mb-1">
+                                重點：體驗完整 10 支影片
+                              </p>
+                              <p className="text-amber-700 text-xs">
+                                讓你熟悉流程、看見成品品質，建立合作默契。
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-lg">
+                            <div className="flex items-start">
+                              <Info className="w-4 h-4 text-amber-700 mt-0.5 mr-2 flex-shrink-0" />
+                              <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                                ※ 本方案僅體驗「單次內容製作流程」，不涉及長期方向或經營判斷
+                              </p>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="mb-16">
-                            <h3 className="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 pl-2 border-l-4 border-indigo-500">
-                                Part 01. 基本流程與拍攝
-                            </h3>
+                        <button className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
+                          立即預約體驗
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
 
-                            <Section title="方案與權益確認" icon={<Icon name="FileText" />}>
-                                <div className="flex items-start bg-rose-50 p-4 rounded-xl border border-rose-100">
-                                    <Icon name="AlertCircle" className="w-5 h-5 text-rose-500 mt-0.5 mr-3 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-rose-900 font-bold text-sm">權益提醒</p>
-                                        <p className="text-rose-700 text-sm mt-1">
-                                            目前的優惠價格需在 <strong className="underline decoration-2">12/31 前確認</strong> 才有效。
-                                        </p>
-                                    </div>
-                                </div>
-                            </Section>
-                            
-                            <section className="py-12 bg-slate-900 relative overflow-hidden rounded-3xl mb-8" id="offer">
-                                <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz48L2c+PC9zdmc+')]"></div>
-                                <div className="px-4 relative z-10 flex flex-col md:flex-row items-center gap-12">
-                                    
-                                    <div className="md:w-1/2 text-white">
-                                        <div className="inline-block bg-indigo-500/20 border border-indigo-400/30 rounded-full px-4 py-1.5 mb-6">
-                                            <span className="text-indigo-300 text-sm font-bold tracking-wide uppercase">Limited Offer</span>
-                                        </div>
-                                        <h2 className="text-3xl md:text-4xl font-extrabold mb-6 leading-tight">
-                                            首購體驗方案<br />
-                                            <span className="text-indigo-400">建構你的專業第一步</span>
-                                        </h2>
-                                        <p className="text-slate-300 text-base mb-8 leading-relaxed">
-                                            這是一個專為初次合作夥伴設計的低門檻方案。只需一次性的投入,就能獲得完整的專業服務體驗與 10 支高品質影片。
-                                        </p>
-                                        <ul className="space-y-4 mb-10">
-                                            <li className="flex items-center text-slate-200">
-                                                <Icon name="CheckCircle2" className="w-5 h-5 text-emerald-400 mr-3" />
-                                                <span>無綁約,新客限一次</span>
-                                            </li>
-                                            <li className="flex items-center text-slate-200">
-                                                <Icon name="CheckCircle2" className="w-5 h-5 text-emerald-400 mr-3" />
-                                                <span>有人帶領的輕鬆起步</span>
-                                            </li>
-                                            <li className="flex items-center text-slate-200">
-                                                <Icon name="CheckCircle2" className="w-5 h-5 text-emerald-400 mr-3" />
-                                                <span>建立觀眾信任的基礎</span>
-                                            </li>
-                                        </ul>
-                                    </div>
+                <Section
+                  title="整體執行流程"
+                  icon={<Layout className="w-6 h-6" />}
+                >
+                  <ProcessPreview />
+                </Section>
 
-                                    <div className="md:w-1/2 w-full">
-                                        <div className="bg-white rounded-3xl p-6 shadow-2xl border-4 border-indigo-500/30 transform hover:-translate-y-2 transition-transform duration-300 relative">
-                                            <div className="absolute -top-5 -right-5 bg-rose-500 text-white w-20 h-20 rounded-full flex flex-col items-center justify-center font-bold shadow-lg transform rotate-12">
-                                                <span className="text-xs">現省</span>
-                                                <span className="text-lg">$17K</span>
-                                            </div>
-                                            
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div>
-                                                    <h3 className="text-xl font-bold text-slate-900">首購體驗方案</h3>
-                                                    <p className="text-slate-500 text-sm mt-1">無綁約・體驗完整流程</p>
-                                                </div>
-                                                <div className="p-3 bg-indigo-50 rounded-xl">
-                                                    <Icon name="Play" />
-                                                </div>
-                                            </div>
+                <Section
+                  title="預約拍攝日"
+                  icon={<CalendarIcon className="w-6 h-6" />}
+                >
+                  <p className="text-slate-600 mb-6">
+                    為了確保如期交付，我們預留了以下兩個區段的黃金檔期，請直接點選適合您的時間：
+                  </p>
 
-                                            <div className="mb-8 pb-8 border-b border-slate-100">
-                                                <div className="flex items-baseline gap-3">
-                                                    <span className="text-4xl font-extrabold text-slate-900">$13,000</span>
-                                                    <span className="text-base text-slate-400 line-through decoration-2">價值 $30,000</span>
-                                                </div>
-                                                <p className="text-indigo-600 font-medium text-sm mt-2 flex items-center">
-                                                    <Icon name="Tag" className="w-4 h-4 mr-1" /> 新客限定優惠價
-                                                </p>
-                                            </div>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <p className="text-xs font-bold text-indigo-600 uppercase mb-3 flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
+                        預定第一區段 (2026/3/30~31)
+                      </p>
+                      <CalendarWidget
+                        monthName="March"
+                        year="2026"
+                        startDay={0}
+                        daysInMonth={31}
+                        availableDates={[30, 31]}
+                        selectedDates={selectedDates}
+                        onDateSelect={toggleDate}
+                      />
+                    </div>
 
-                                            <div className="space-y-6 mb-8">
-                                                <div>
-                                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">你會實際獲得什麼</p>
-                                                    <ul className="space-y-3">
-                                                        {features.map((item, idx) => (
-                                                            <li key={idx} className="flex items-start text-sm text-slate-700">
-                                                                <Icon name="CheckCircle2" className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0 mr-3" />
-                                                                <span className="font-medium">{item}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
+                    <div>
+                      <p className="text-xs font-bold text-indigo-600 uppercase mb-3 flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
+                        預定第二區段 (2026/5/27~29)
+                      </p>
+                      <CalendarWidget
+                        monthName="May"
+                        year="2026"
+                        startDay={5}
+                        daysInMonth={31}
+                        availableDates={[27, 28, 29]}
+                        selectedDates={selectedDates}
+                        onDateSelect={toggleDate}
+                      />
+                    </div>
+                  </div>
 
-                                                <div className="bg-slate-50 rounded-xl p-4 space-y-2 text-xs text-slate-600">
-                                                    <div className="flex items-center">
-                                                        <Icon name="Clapperboard" className="w-4 h-4 text-indigo-500 mr-2" />
-                                                        <span>預計產出：<strong className="text-slate-900">10 支影片</strong></span>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <Icon name="Timer" className="w-4 h-4 text-indigo-500 mr-2" />
-                                                        <span>拍攝執行：<strong className="text-slate-900">1天 (至少5小時)</strong></span>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <Icon name="FileCheck" className="w-4 h-4 text-indigo-500 mr-2" />
-                                                        <span>後製交付：<strong className="text-slate-900">以雙方達成協議時間為主</strong></span>
-                                                    </div>
-                                                </div>
+                  <div
+                    className={`mt-6 p-4 rounded-xl text-center border-2 transition-all duration-300 ${
+                      selectedDates.length > 0
+                        ? "bg-indigo-50 border-indigo-200 text-indigo-900"
+                        : "bg-slate-50 border-slate-100 text-slate-400 border-dashed"
+                    }`}
+                  >
+                    {selectedDates.length > 0 ? (
+                      <div>
+                        <p className="text-xs text-indigo-500 font-bold uppercase tracking-wider mb-1">
+                          已選擇檔期
+                        </p>
+                        <p className="text-xl font-bold">
+                          {selectedDates.join("、")}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm">請點選上方日曆中的日期</p>
+                    )}
+                  </div>
+                </Section>
+              </div>
 
-                                                <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-start">
-                                                    <Icon name="Lightbulb" className="w-5 h-5 text-amber-500 mt-0.5 mr-3 flex-shrink-0" />
-                                                    <div>
-                                                        <p className="text-amber-900 font-bold text-sm mb-1">重點：體驗完整10支影片</p>
-                                                        <p className="text-amber-700 text-xs">讓你熟悉流程、看見成品品質,建立合作默契。</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="bg-amber-100 border-l-4 border-amber-500 p-3 rounded-r-lg">
-                                                    <div className="flex items-start">
-                                                        <Icon name="Info" className="w-4 h-4 text-amber-700 mt-0.5 mr-2 flex-shrink-0" />
-                                                        <p className="text-xs text-amber-900 font-medium leading-relaxed">
-                                                            ※ 本方案僅體驗「單次內容製作流程」,不涉及長期方向或經營判斷
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
+              {/* Part 2 */}
+              <div className="mb-12">
+                <h3 className="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 pl-2 border-l-4 border-amber-500">
+                  Part 02. 主題內容與方向
+                </h3>
 
-                                            <button className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
-                                                立即預約體驗
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
+                <Section title="目標設定" icon={<TargetIcon className="w-6 h-6" />}>
+                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-100">
+                    <h3 className="text-lg font-bold text-amber-900 mb-3 flex items-center">
+                      <CheckCircle2 className="w-5 h-5 mr-2 text-amber-600" />
+                      清晰體驗方案
+                    </h3>
+                    <p className="text-slate-700 leading-relaxed mb-4">
+                      我們會帶你製作出{" "}
+                      <span className="font-bold text-amber-700 bg-amber-200/50 px-1">
+                        自然感的 10 支短影片
+                      </span>
+                      。
+                    </p>
+                    <div className="border-t border-amber-200 pt-4 mt-2">
+                      <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">
+                        核心目的
+                      </span>
+                      <p className="text-xl font-bold text-slate-800 mt-1">
+                        開始建立專業設計師的形象
+                      </p>
+                    </div>
+                  </div>
+                </Section>
 
-                            <Section title="整體執行流程" icon={<Icon name="Layout" />}>
-                                <ProcessPreview />
-                            </Section>
+                <Section title="建立正確心態" icon={<Users className="w-6 h-6" />}>
+                  <div className="space-y-6">
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-2xl">
+                        🤔
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">
+                          如果你遇到...
+                        </h4>
+                        <p className="text-slate-600">
+                          影片發了，但覺得觀看數很少？
+                        </p>
+                      </div>
+                    </div>
 
-                            <Section title="預約拍攝日" icon={<Icon name="Calendar" />}>
-                                <p className="text-slate-600 mb-6">
-                                    為了確保如期交付,我們預留了以下兩個區段的黃金檔期,請直接點選適合您的時間:
-                                </p>
-                                
-                                <div className="grid md:grid-cols-2 gap-8">
-                                    <div>
-                                        <p className="text-xs font-bold text-indigo-600 uppercase mb-3 flex items-center">
-                                            <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
-                                            預定第一區段 (2026/3/30~31)
-                                        </p>
-                                        <CalendarWidget 
-                                            monthName="March" 
-                                            year="2026" 
-                                            startDay={0}
-                                            daysInMonth={31} 
-                                            availableDates={[30, 31]} 
-                                            selectedDates={selectedDates}
-                                            onDateSelect={toggleDate}
-                                        />
-                                    </div>
+                    <div className="flex justify-center">
+                      <ArrowDown className="w-6 h-6 text-slate-300" />
+                    </div>
 
-                                    <div>
-                                        <p className="text-xs font-bold text-indigo-600 uppercase mb-3 flex items-center">
-                                            <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
-                                            預定第二區段 (2026/5/27~29)
-                                        </p>
-                                        <CalendarWidget 
-                                            monthName="May" 
-                                            year="2026" 
-                                            startDay={5}
-                                            daysInMonth={31} 
-                                            availableDates={[27, 28, 29]} 
-                                            selectedDates={selectedDates}
-                                            onDateSelect={toggleDate}
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div className={`mt-6 p-4 rounded-xl text-center border-2 transition-all duration-300 ${
-                                    selectedDates.length > 0 
-                                        ? 'bg-indigo-50 border-indigo-200 text-indigo-900' 
-                                        : 'bg-slate-50 border-slate-100 text-slate-400 border-dashed'
-                                }`}>
-                                    {selectedDates.length > 0 ? (
-                                        <div>
-                                            <p className="text-xs text-indigo-500 font-bold uppercase tracking-wider mb-1">已選擇檔期</p>
-                                            <p className="text-xl font-bold">{selectedDates.join('、')}</p>
-                                        </div>
-                                    ) : (
-                                        <p className="text-sm">請點選上方日曆中的日期</p>
-                                    )}
-                                </div>
-                            </Section>
-                        </div>
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-2xl">
+                        💡
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">
+                          你需要清楚的是...
+                        </h4>
+                        <p className="text-slate-600 text-lg font-bold text-indigo-600">
+                          影片的觀看數 <span className="text-rose-500">≠</span>{" "}
+                          內容的品質
+                        </p>
+                        <p className="text-xs text-slate-400 mt-2">
+                          專業形象的累積是長期的，精準的受眾比廣泛的流量更有價值。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Section>
 
-                        <div className="mb-12">
-                            <h3 className="text-xl font-bold text-slate-400 uppercase tracking-widest mb-6 pl-2 border-l-4 border-amber-500">
-                                Part 02. 主題內容與方向
-                            </h3>
+                <SocialObservationSection />
+              </div>
+            </main>
 
-                            <Section title="目標設定" icon={<Icon name="Target" />}>
-                                <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-100">
-                                    <h3 className="text-lg font-bold text-amber-900 mb-3 flex items-center">
-                                        <Icon name="CheckCircle2" className="w-5 h-5 mr-2 text-amber-600" />
-                                        清晰體驗方案
-                                    </h3>
-                                    <p className="text-slate-700 leading-relaxed mb-4">
-                                        我們會帶你製作出 <span className="font-bold text-amber-700 bg-amber-200/50 px-1">自然感的 10 支短影片</span>。
-                                    </p>
-                                    <div className="border-t border-amber-200 pt-4 mt-2">
-                                        <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">核心目的</span>
-                                        <p className="text-xl font-bold text-slate-800 mt-1">開始建立專業設計師的形象</p>
-                                    </div>
-                                </div>
-                            </Section>
+            <footer className="text-center text-slate-400 text-sm pb-8 pt-8">
+              © 2025 Project Kickoff Guide
+            </footer>
+          </div>
+        );
+      };
 
-                            <Section title="建立正確心態" icon={<Icon name="Users" />}>
-                                <div className="space-y-6">
-                                    <div className="flex gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-2xl">🤔</div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">如果你遇到...</h4>
-                                            <p className="text-slate-600">影片發了,但覺得觀看數很少？</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex justify-center">
-                                        <Icon name="ArrowDown" className="w-6 h-6 text-slate-300" />
-                                    </div>
-
-                                    <div className="flex gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-2xl">💡</div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900">你需要清楚的是...</h4>
-                                            <p className="text-slate-600 text-lg font-bold text-indigo-600">
-                                                影片的觀看數 <span className="text-rose-500">≠</span> 內容的品質
-                                            </p>
-                                            <p className="text-xs text-slate-400 mt-2">
-                                                專業形象的累積是長期的,精準的受眾比廣泛的流量更有價值。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Section>
-
-                            <Section title="社群品牌觀察" icon={<Icon name="Search" />}>
-                                <p className="text-slate-600 mb-6">
-                                    我們針對每位設計師的特質、商圈與客群,量身打造了以下主題規劃:
-                                </p>
-                                
-                                <div className="grid md:grid-cols-3 gap-6">
-                                    <div className="bg-white rounded-xl p-5 border border-slate-200 hover:border-indigo-300 transition-all shadow-sm">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 font-bold text-lg">柔</div>
-                                            <div>
-                                                <h4 className="font-bold text-slate-800">榆柔老師</h4>
-                                                <p className="text-xs text-slate-500">小林髮廊 風華店</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="space-y-3">
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">技術專長</p>
-                                                <div className="flex flex-wrap gap-1">
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">染髮色彩專家</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">漂染技術</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">造型設計</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">髮質修護</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">特質專長</p>
-                                                <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
-                                                    <li>韓系/日系柔和感氛圍</li>
-                                                    <li>細膩溝通,追求日常高級美</li>
-                                                    <li>默默耕耘型,作品質感一致</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-xl p-5 border border-slate-200 hover:border-indigo-300 transition-all shadow-sm">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 font-bold text-lg">姿</div>
-                                            <div>
-                                                <h4 className="font-bold text-slate-800">姿姿老師</h4>
-                                                <p className="text-xs text-slate-500">小林髮廊 重慶店</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="space-y-3">
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">技術專長</p>
-                                                <div className="flex flex-wrap gap-1">
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">進階染髮技術</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">特殊色彩設計</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">染燙結合</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">特質專長</p>
-                                                <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
-                                                    <li>敢於嘗試、追求獨特</li>
-                                                    <li>高度技術熱情</li>
-                                                    <li>低調實力派</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-xl p-5 border border-slate-200 hover:border-indigo-300 transition-all shadow-sm">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-lg">芝</div>
-                                            <div>
-                                                <h4 className="font-bold text-slate-800">芝芝老師 <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">技術主任</span></h4>
-                                                <p className="text-xs text-slate-500">小林髮廊 崑陽店</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="space-y-3">
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">技術專長</p>
-                                                <div className="flex flex-wrap gap-1">
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">縮毛矯正</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">燙＋染結構</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">特殊色</span>
-                                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">5G鍍膜護髮</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">特質專長</p>
-                                                <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
-                                                    <li>解決台灣潮濕環境「抗躁感」</li>
-                                                    <li>能處理複雜需求</li>
-                                                    <li>建立高端專業人設</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Section>
-                        </div>
-                    </main>
-                    
-                    <footer className="text-center text-slate-400 text-sm pb-8 pt-8">
-                        © 2025 Project Kickoff Guide
-                    </footer>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ClientGuideApp />);
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<ClientGuideApp />);
     </script>
-</body>
+  </body>
 </html>
